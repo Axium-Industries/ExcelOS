@@ -1,3 +1,4 @@
+import type { AgentTool } from "@mariozechner/pi-agent-core";
 import {
   Agent,
   type AgentEvent,
@@ -21,7 +22,13 @@ import {
   useState,
 } from "react";
 import type { DirtyRange } from "../../../lib/dirty-tracker";
-import { getWorkbookMetadata, getSelectedRangeData, navigateTo } from "../../../lib/excel/api";
+import {
+  getSelectedRangeData,
+  getWorkbookMetadata,
+  navigateTo,
+} from "../../../lib/excel/api";
+import { mcpToolToAgentTool, pingMcpServer } from "../../../lib/mcp/mcp-client";
+import { loadMcpServers, updateMcpServer } from "../../../lib/mcp/mcp-config";
 import {
   agentMessagesToChatMessages,
   type ChatMessage,
@@ -64,13 +71,6 @@ import {
   saveVfsFiles,
 } from "../../../lib/storage";
 import { EXCEL_TOOLS } from "../../../lib/tools";
-import {
-  fetchMcpTools,
-  mcpToolToAgentTool,
-  pingMcpServer,
-} from "../../../lib/mcp/mcp-client";
-import { loadMcpServers, updateMcpServer } from "../../../lib/mcp/mcp-config";
-import type { AgentTool } from "@mariozechner/pi-agent-core";
 import {
   deleteFile,
   listUploads,
@@ -125,7 +125,11 @@ const INITIAL_STATS: SessionStats = { ...deriveStats([]), contextWindow: 0 };
 
 interface ChatContextValue {
   state: ChatState;
-  sendMessage: (content: string, attachments?: string[], includeSelection?: boolean) => Promise<void>;
+  sendMessage: (
+    content: string,
+    attachments?: string[],
+    includeSelection?: boolean,
+  ) => Promise<void>;
   setProviderConfig: (config: ProviderConfig) => void;
   clearMessages: () => void;
   abort: () => void;
@@ -143,6 +147,11 @@ interface ChatContextValue {
   setMcpTools: (tools: AgentTool[]) => void;
   updateServerMcpTools: (serverId: string, tools: AgentTool[]) => void;
   removeServerMcpTools: (serverId: string) => void;
+  streamCompletion: (
+    prompt: string,
+    onChunk: (text: string) => void,
+    signal: AbortSignal,
+  ) => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextValue | null>(null);
@@ -155,7 +164,10 @@ function buildMcpToolsSection(mcpTools: AgentTool[]): string {
   return `\nMCP TOOLS (external servers):\n${lines.join("\n")}\n`;
 }
 
-function buildSystemPrompt(skills: SkillMeta[], mcpTools: AgentTool[] = []): string {
+function buildSystemPrompt(
+  skills: SkillMeta[],
+  mcpTools: AgentTool[] = [],
+): string {
   return `You are an AI assistant integrated into Microsoft Excel with full access to read and modify spreadsheet data.
 
 Available tools:
@@ -218,7 +230,6 @@ ${buildMcpToolsSection(mcpTools)}
 ${buildSkillsPromptSection(skills)}
 `;
 }
-
 
 function thinkingLevelToAgent(level: ThinkingLevel): AgentThinkingLevel {
   return level === "none" ? "off" : level;
@@ -559,7 +570,10 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           model: proxiedModel,
           systemPrompt,
           thinkingLevel: thinkingLevelToAgent(config.thinking),
-          tools: [...EXCEL_TOOLS, ...Array.from(mcpToolsRef.current.values()).flat()],
+          tools: [
+            ...EXCEL_TOOLS,
+            ...Array.from(mcpToolsRef.current.values()).flat(),
+          ],
           messages: existingMessages,
         },
         streamFn: async (model, context, options) => {
@@ -625,6 +639,39 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     [applyConfig],
   );
 
+  const streamCompletion = useCallback(
+    async (
+      prompt: string,
+      onChunk: (text: string) => void,
+      signal: AbortSignal,
+    ) => {
+      const cfg = configRef.current ?? state.providerConfig;
+      if (!cfg) throw new Error("No provider configured");
+      const apiKey = await getActiveApiKey(cfg);
+      let baseModel: Model<any>;
+      if (cfg.provider === "custom") {
+        const custom = buildCustomModel(cfg);
+        if (!custom) throw new Error("Invalid custom model config");
+        baseModel = custom;
+      } else {
+        baseModel = getModel(cfg.provider as any, cfg.model as any);
+      }
+      const model = applyProxyToModel(baseModel, cfg);
+      const stream = streamSimple(
+        model,
+        {
+          messages: [{ role: "user", content: prompt, timestamp: Date.now() }],
+        },
+        { apiKey },
+      );
+      for await (const event of stream) {
+        if (signal.aborted) break;
+        if (event.type === "text_delta") onChunk(event.delta);
+      }
+    },
+    [state.providerConfig, getActiveApiKey],
+  );
+
   const setProviderConfig = useCallback(
     (config: ProviderConfig) => {
       if (isStreamingRef.current) {
@@ -644,7 +691,11 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const sendMessage = useCallback(
-    async (content: string, attachments?: string[], includeSelection?: boolean) => {
+    async (
+      content: string,
+      attachments?: string[],
+      includeSelection?: boolean,
+    ) => {
       if (pendingConfigRef.current) {
         applyConfig(pendingConfigRef.current);
       }
@@ -699,7 +750,11 @@ export function ChatProvider({ children }: { children: ReactNode }) {
               const selBlock = [
                 `<selection_context address="${sel.address}">`,
                 `This is the user's active selection. Use this range as the data source AND as the target location for any new content (charts, tables, formatting, etc.) unless instructed otherwise.`,
-                JSON.stringify({ values: sel.values, formulas: sel.formulas }, null, 2),
+                JSON.stringify(
+                  { values: sel.values, formulas: sel.formulas },
+                  null,
+                  2,
+                ),
                 `</selection_context>`,
               ].join("\n");
               promptContent = `${selBlock}\n\n${promptContent}`;
@@ -956,7 +1011,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [applyConfig]);
 
   useEffect(() => {
     if (sessionLoadedRef.current) return;
@@ -1176,6 +1231,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         setMcpTools,
         updateServerMcpTools,
         removeServerMcpTools,
+        streamCompletion,
       }}
     >
       {children}

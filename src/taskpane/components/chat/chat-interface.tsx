@@ -3,6 +3,7 @@ import {
   ChevronDown,
   Eye,
   EyeOff,
+  FunctionSquare,
   MessageSquare,
   Moon,
   Plus,
@@ -22,6 +23,7 @@ import {
 import { getSessionMessageCount } from "../../../lib/storage";
 import { ChatProvider, useChat } from "./chat-context";
 import { ChatInput } from "./chat-input";
+import { FormulaPanel } from "./formula-panel";
 import { MessageList } from "./message-list";
 import { SettingsPanel } from "./settings-panel";
 import type { ChatTab } from "./types";
@@ -319,6 +321,13 @@ function ChatHeader({
             <Settings size={12} />
             Settings
           </TabButton>
+          <TabButton
+            active={activeTab === "formula"}
+            onClick={() => onTabChange("formula")}
+          >
+            <FunctionSquare size={12} />
+            Formula
+          </TabButton>
         </div>
         <div className="flex items-center pr-6">
           {activeTab === "chat" && (
@@ -417,7 +426,9 @@ function ChatContent() {
         theme={theme}
         onThemeToggle={toggle}
       />
-      {activeTab === "chat" ? (
+      {activeTab === "formula" ? (
+        <FormulaPanel />
+      ) : activeTab === "chat" ? (
         <>
           <MessageList />
           <ChatInput />
