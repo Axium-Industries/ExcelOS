@@ -55,6 +55,7 @@ import {
   buildSkillsPromptSection,
   getInstalledSkills,
   removeSkill,
+  seedDefaultSkills,
   type SkillMeta,
   syncSkillsToVfs,
 } from "../../../lib/skills";
@@ -1021,6 +1022,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       .then(async (id) => {
         workbookIdRef.current = id;
         console.log("[Chat] Workbook ID:", id);
+
+        // Seed built-in skill pack on first launch (no-op if skills already installed)
+        await seedDefaultSkills();
 
         // Load skills into VFS cache BEFORE applyConfig so the system prompt includes them
         const skills = await getInstalledSkills();

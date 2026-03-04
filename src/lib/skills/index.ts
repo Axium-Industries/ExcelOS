@@ -6,6 +6,7 @@ import {
   saveSkillFiles,
 } from "../storage";
 import { setSkillFiles } from "../vfs";
+import { DEFAULT_SKILLS } from "./defaultSkills";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -109,6 +110,23 @@ export async function syncSkillsToVfs(): Promise<void> {
     initialFiles[`/home/skills/${f.skillName}/${f.path}`] = f.data;
   }
   setSkillFiles(initialFiles);
+}
+
+/**
+ * Seeds the default skill pack. Installs any default skills that are not
+ * already present, without touching user-added skills.
+ */
+export async function seedDefaultSkills(): Promise<void> {
+  const existing = new Set(await listSkillNames());
+
+  for (const skill of DEFAULT_SKILLS) {
+    if (existing.has(skill.name)) continue;
+    try {
+      await addSkill(skill.files);
+    } catch (e) {
+      console.warn(`[Skills] Failed to seed skill "${skill.name}":`, e);
+    }
+  }
 }
 
 export function buildSkillsPromptSection(skills: SkillMeta[]): string {
