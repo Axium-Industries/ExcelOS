@@ -419,7 +419,7 @@ function ChatHeader({
 }
 
 function ManagedOnboarding({ onDone }: { onDone: () => void }) {
-  const { availableProviders, getModelsForProvider } = useChat();
+  const { availableProviders, getModelsForProvider, setProviderConfig } = useChat();
   const [provider, setProvider] = useState("");
   const [model, setModel] = useState("");
   const [key, setKey] = useState("");
@@ -436,18 +436,20 @@ function ManagedOnboarding({ onDone }: { onDone: () => void }) {
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    saveConfig({
+    const config = {
       provider,
       model,
       apiKey: key.trim(),
       useProxy: false,
       proxyUrl: "",
-      thinking: "none",
+      thinking: "none" as const,
       followMode: true,
       apiType: "",
       customBaseUrl: "",
-      authMethod: "apikey",
-    });
+      authMethod: "apikey" as const,
+    };
+    saveConfig(config);
+    setProviderConfig(config);
     localStorage.setItem(MANAGED_API_KEY, "1");
     onDone();
   };
