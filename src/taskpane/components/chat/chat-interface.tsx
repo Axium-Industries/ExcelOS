@@ -21,8 +21,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { getSessionMessageCount } from "../../../lib/storage";
 import { saveConfig } from "../../../lib/provider-config";
+import { getSessionMessageCount } from "../../../lib/storage";
 import { ChatProvider, useChat } from "./chat-context";
 import { ChatInput } from "./chat-input";
 import { FormulaPanel } from "./formula-panel";
@@ -419,7 +419,8 @@ function ChatHeader({
 }
 
 function ManagedOnboarding({ onDone }: { onDone: () => void }) {
-  const { availableProviders, getModelsForProvider, setProviderConfig } = useChat();
+  const { availableProviders, getModelsForProvider, setProviderConfig } =
+    useChat();
   const [provider, setProvider] = useState("");
   const [model, setModel] = useState("");
   const [key, setKey] = useState("");
@@ -456,7 +457,10 @@ function ManagedOnboarding({ onDone }: { onDone: () => void }) {
 
   const selectClass =
     "w-full px-3 py-2.5 text-xs bg-(--chat-input-bg) border border-(--chat-border) text-(--chat-text-primary) outline-none focus:border-(--chat-accent) appearance-none cursor-pointer";
-  const selectStyle = { borderRadius: "var(--chat-radius)", fontFamily: "var(--chat-font-sans)" };
+  const selectStyle = {
+    borderRadius: "var(--chat-radius)",
+    fontFamily: "var(--chat-font-sans)",
+  };
 
   return (
     <div
@@ -467,7 +471,8 @@ function ManagedOnboarding({ onDone }: { onDone: () => void }) {
         <div
           className="w-10 h-10 flex items-center justify-center mb-2"
           style={{
-            background: "linear-gradient(135deg, var(--chat-accent) 0%, #272bb0 100%)",
+            background:
+              "linear-gradient(135deg, var(--chat-accent) 0%, #272bb0 100%)",
             borderRadius: "10px",
           }}
         >
@@ -475,12 +480,16 @@ function ManagedOnboarding({ onDone }: { onDone: () => void }) {
         </div>
         <h2
           className="text-base text-(--chat-text-primary)"
-          style={{ fontFamily: "Kiona, var(--chat-font-sans)", letterSpacing: "0.12em" }}
+          style={{
+            fontFamily: "Kiona, var(--chat-font-sans)",
+            letterSpacing: "0.12em",
+          }}
         >
           Welcome to Excel<span style={{ fontWeight: 700 }}>OS</span>
         </h2>
         <p className="text-xs text-(--chat-text-muted) leading-relaxed max-w-[220px]">
-          Set up your AI provider to get started. You'll only need to do this once.
+          Set up your AI provider to get started. You'll only need to do this
+          once.
         </p>
       </div>
 
@@ -512,7 +521,7 @@ function ManagedOnboarding({ onDone }: { onDone: () => void }) {
             value={model}
             onChange={(e) => setModel(e.target.value)}
             disabled={!provider || models.length === 0}
-            className={selectClass + " disabled:opacity-50"}
+            className={`${selectClass} disabled:opacity-50`}
             style={selectStyle}
           >
             <option value="">Select model…</option>
@@ -537,7 +546,10 @@ function ManagedOnboarding({ onDone }: { onDone: () => void }) {
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             placeholder="API key…"
             className="w-full px-3 py-2.5 text-xs bg-(--chat-input-bg) border border-(--chat-border) text-(--chat-text-primary) outline-none focus:border-(--chat-accent) pr-9"
-            style={{ borderRadius: "var(--chat-radius)", fontFamily: "var(--chat-font-mono)" }}
+            style={{
+              borderRadius: "var(--chat-radius)",
+              fontFamily: "var(--chat-font-mono)",
+            }}
           />
           <button
             type="button"
@@ -567,7 +579,7 @@ function ChatContent() {
   const { theme, toggle } = useTheme();
   const { processFiles } = useChat();
   const [managedReady, setManagedReady] = useState(
-    !IS_MANAGED || !!localStorage.getItem(MANAGED_API_KEY)
+    !IS_MANAGED || !!localStorage.getItem(MANAGED_API_KEY),
   );
   const [isDragOver, setIsDragOver] = useState(false);
   const dragCounterRef = useRef(0);

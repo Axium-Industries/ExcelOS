@@ -42,14 +42,13 @@ import {
   THINKING_LEVELS,
   type ThinkingLevel,
 } from "../../../lib/provider-config";
-import { DEFAULT_SKILLS } from "../../../lib/skills/defaultSkills";
 import { loadWebConfig, saveWebConfig } from "../../../lib/web/config";
 import { listFetchProviders } from "../../../lib/web/fetch";
 import { listSearchProviders } from "../../../lib/web/search";
 import { useChat } from "./chat-context";
 
 /** Collapsible settings section card */
-function SettingsSection({
+function _SettingsSection({
   title,
   badge,
   defaultOpen = false,
@@ -73,9 +72,7 @@ function SettingsSection({
       >
         <ChevronRight
           size={12}
-          className={`shrink-0 transition-transform ${
-            open ? "rotate-90" : ""
-          }`}
+          className={`shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
         />
         <span className="flex-1">{title}</span>
         {badge && (
@@ -152,9 +149,7 @@ function SkillsSection() {
           </div>
         </div>
       ) : (
-        <p className="text-xs text-(--chat-text-muted)">
-          No skills installed
-        </p>
+        <p className="text-xs text-(--chat-text-muted)">No skills installed</p>
       )}
 
       {/* Add buttons */}
