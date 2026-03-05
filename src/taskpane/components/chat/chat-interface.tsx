@@ -319,13 +319,14 @@ function ChatHeader({
               <Grid3X3 size={13} className="text-white" />
             </div>
             <span
-              className="text-sm font-semibold text-(--chat-text-primary)"
+              className="text-base text-(--chat-text-primary)"
               style={{
-                fontFamily: "var(--chat-font-sans)",
-                letterSpacing: "-0.02em",
+                fontFamily: "Kiona, var(--chat-font-sans)",
+                letterSpacing: "0.18em",
+                fontWeight: 400,
               }}
             >
-              ExcelOS
+              <span style={{ fontWeight: 700 }}>Excel</span> OS
             </span>
             <span
               className="text-[9px] text-(--chat-text-muted)"
@@ -334,7 +335,7 @@ function ChatHeader({
                 letterSpacing: "0.05em",
               }}
             >
-              v0.2
+              powered by Axium
             </span>
           </div>
           <div className="flex items-center gap-0.5">

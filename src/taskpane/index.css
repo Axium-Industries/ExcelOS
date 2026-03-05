@@ -1,4 +1,18 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Kiona";
+  src: url("/fonts/Kiona-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Kiona";
+  src: url("/fonts/Kiona-Itallic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
 @source "../**/*.{ts,tsx,html}";
 @source "../../node_modules/streamdown/dist/*.js";
 
