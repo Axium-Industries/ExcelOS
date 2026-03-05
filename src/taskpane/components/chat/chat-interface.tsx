@@ -316,7 +316,7 @@ function ChatHeader({
               className="w-6 h-6 shrink-0 flex items-center justify-center"
               style={{
                 background:
-                  "linear-gradient(135deg, var(--chat-accent) 0%, #8b5cf6 100%)",
+                  "linear-gradient(135deg, var(--chat-accent) 0%, #272bb0 100%)",
                 borderRadius: "6px",
               }}
             >

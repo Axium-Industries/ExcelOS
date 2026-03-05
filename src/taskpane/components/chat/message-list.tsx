@@ -393,7 +393,7 @@ function UserBubble({ message }: { message: ChatMessage }) {
         You
       </span>
       <div
-        className="ml-8 px-3.5 py-2.5 text-[13px] leading-relaxed bg-(--chat-user-bg) border border-(--chat-border) shadow-xs"
+        className="ml-8 px-3.5 py-2.5 text-[15px] leading-relaxed bg-(--chat-user-bg) border border-(--chat-border) shadow-xs"
         style={{
           borderRadius:
             "var(--chat-radius) 2px var(--chat-radius) var(--chat-radius)",
@@ -433,14 +433,14 @@ function AssistantBubble({
         className="w-[26px] h-[26px] shrink-0 flex items-center justify-center mt-0.5"
         style={{
           background:
-            "linear-gradient(135deg, var(--chat-accent) 0%, #8b5cf6 100%)",
+            "linear-gradient(135deg, var(--chat-accent) 0%, #272bb0 100%)",
           borderRadius: "50%",
         }}
       >
         <Grid3X3 size={12} className="text-white" />
       </div>
       <div
-        className="flex-1 min-w-0 text-[13px] leading-relaxed border border-(--chat-border) bg-(--chat-assistant-bg) shadow-sm px-3.5 py-2.5"
+        className="flex-1 min-w-0 text-[15px] leading-relaxed border border-(--chat-border) bg-(--chat-assistant-bg) shadow-sm px-3.5 py-2.5"
         style={{
           borderRadius:
             "2px var(--chat-radius) var(--chat-radius) var(--chat-radius)",
