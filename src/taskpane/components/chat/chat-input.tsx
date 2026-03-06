@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { trackEvent } from "../../../lib/analytics";
 import { getSelectionAddress } from "../../../lib/excel/api";
 import { useChat } from "./chat-context";
 
@@ -74,12 +75,24 @@ export function ChatInput() {
     if (!trimmed || state.isStreaming) return;
     const attachmentNames = uploads.map((u) => u.name);
     setInput("");
+    trackEvent("message_sent", {
+      provider: state.providerConfig?.provider ?? "",
+      model: state.providerConfig?.model ?? "",
+    });
     await sendMessage(
       trimmed,
       attachmentNames.length > 0 ? attachmentNames : undefined,
       includeSelection,
     );
-  }, [input, state.isStreaming, sendMessage, uploads, includeSelection]);
+  }, [
+    input,
+    state.isStreaming,
+    sendMessage,
+    uploads,
+    includeSelection,
+    state.providerConfig?.model,
+    state.providerConfig?.provider,
+  ]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {

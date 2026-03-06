@@ -21,6 +21,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { trackEvent } from "../../../lib/analytics";
 import { saveConfig } from "../../../lib/provider-config";
 import { getSessionMessageCount } from "../../../lib/storage";
 import { ChatProvider, useChat } from "./chat-context";
@@ -451,6 +452,7 @@ function ManagedOnboarding({ onDone }: { onDone: () => void }) {
     };
     saveConfig(config);
     setProviderConfig(config);
+    trackEvent("onboarding_completed", { provider, model });
     localStorage.setItem(MANAGED_API_KEY, "1");
     onDone();
   };
