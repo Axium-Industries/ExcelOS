@@ -40,6 +40,6 @@ output "managed_s3_bucket_name" {
 }
 
 output "analytics_endpoint" {
-  description = "Lambda function URL — set as VITE_ANALYTICS_URL"
-  value       = aws_lambda_function_url.analytics.function_url
+  description = "API Gateway endpoint — set as VITE_ANALYTICS_URL"
+  value       = aws_apigatewayv2_stage.analytics.invoke_url
 }

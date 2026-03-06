@@ -82,15 +82,42 @@ resource "aws_lambda_function" "analytics" {
   }
 }
 
-# ─── Lambda Function URL (free HTTPS endpoint, no API Gateway) ───────────────
+# ─── API Gateway HTTP API ────────────────────────────────────────────────────
 
-resource "aws_lambda_function_url" "analytics" {
-  function_name      = aws_lambda_function.analytics.function_name
-  authorization_type = "NONE"
+resource "aws_apigatewayv2_api" "analytics" {
+  name          = "${var.project_name}-analytics"
+  protocol_type = "HTTP"
 
-  cors {
+  cors_configuration {
     allow_origins = ["*"]
     allow_methods = ["POST"]
     allow_headers = ["content-type"]
   }
+}
+
+resource "aws_apigatewayv2_integration" "analytics" {
+  api_id                 = aws_apigatewayv2_api.analytics.id
+  integration_type       = "AWS_PROXY"
+  integration_uri        = aws_lambda_function.analytics.invoke_arn
+  payload_format_version = "2.0"
+}
+
+resource "aws_apigatewayv2_route" "analytics" {
+  api_id    = aws_apigatewayv2_api.analytics.id
+  route_key = "POST /"
+  target    = "integrations/${aws_apigatewayv2_integration.analytics.id}"
+}
+
+resource "aws_apigatewayv2_stage" "analytics" {
+  api_id      = aws_apigatewayv2_api.analytics.id
+  name        = "$default"
+  auto_deploy = true
+}
+
+resource "aws_lambda_permission" "analytics_apigw" {
+  statement_id  = "AllowAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.analytics.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_apigatewayv2_api.analytics.execution_arn}/*/*"
 }
