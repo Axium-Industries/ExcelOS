@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { initAnalytics, trackEvent } from "../lib/analytics";
 import App from "./components/app";
 import "./index.css";
 
@@ -8,5 +9,7 @@ const rootElement: HTMLElement | null = document.getElementById("container");
 const root = rootElement ? createRoot(rootElement) : undefined;
 
 Office.onReady(() => {
+  initAnalytics();
+  trackEvent("addin_opened");
   root?.render(<App title={title} />);
 });

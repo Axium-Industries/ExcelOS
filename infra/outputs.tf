@@ -38,3 +38,8 @@ output "managed_s3_bucket_name" {
   description = "Managed S3 bucket name — use as AWS_MANAGED_S3_BUCKET secret"
   value       = aws_s3_bucket.managed.bucket
 }
+
+output "analytics_endpoint" {
+  description = "Lambda function URL — set as VITE_ANALYTICS_URL"
+  value       = aws_lambda_function_url.analytics.function_url
+}
