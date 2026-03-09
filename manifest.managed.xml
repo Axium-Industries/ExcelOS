@@ -6,8 +6,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="ExcelOS"/>
   <Description DefaultValue="AI Chat for Excel - Powered by Axium."/>
-  <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png"/>
-  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-64.png"/>
+  <IconUrl DefaultValue="https://raw.githubusercontent.com/Axium-Industries/ExcelOS/main/public/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://raw.githubusercontent.com/Axium-Industries/ExcelOS/main/public/assets/icon-64.png"/>
   <SupportUrl DefaultValue="https://localhost:3000/"/>
   <AppDomains>
     <AppDomain>https://localhost:3000/</AppDomain>
@@ -63,9 +63,9 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+        <bt:Image id="Icon.16x16" DefaultValue="https://raw.githubusercontent.com/Axium-Industries/ExcelOS/main/public/assets/icon-16.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://raw.githubusercontent.com/Axium-Industries/ExcelOS/main/public/assets/icon-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://raw.githubusercontent.com/Axium-Industries/ExcelOS/main/public/assets/icon-80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com/Axium-Industries/ExcelOS"/>
